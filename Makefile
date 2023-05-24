@@ -21,7 +21,7 @@ confirm:
 ## run/api: run the cmd/api application
 .PHONY: run/api
 run/api:
-	reflex -r go -s go run ./cmd/api -db-dsn=${GREENLIGHT_DB_DSN}
+	reflex -r go -s go run ./cmd/api -- -db-dsn=${GREENLIGHT_DB_DSN}
 
 ## db/psql: connect to the database using psql
 .PHONY: db/psql
@@ -39,6 +39,12 @@ db/migrations/new:
 db/migrations/up: confirm
 	@echo 'Running up migrations...'
 	migrate -path ./migrations -database ${GREENLIGHT_DB_DSN} up
+
+## db/migrations/down: apply down database migration
+.PHONY: db/migrations/down
+db/migrations/down: confirm
+	@echo 'Running down migration...'
+	migrate -path ./migrations -database ${GREENLIGHT_DB_DSN} down 1
 
 # ==================================================================================== #
 # QUALITY CONTROL

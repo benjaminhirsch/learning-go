@@ -1,0 +1,13 @@
+version: '3.1'
+
+services:
+  db:
+    image: postgres:13-alpine
+    container_name: greenlight-db
+    restart: always
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: app
+      POSTGRES_DB: app
+    ports:
+      - "5432:5432"
