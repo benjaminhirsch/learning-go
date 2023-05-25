@@ -1,0 +1,14 @@
+###
+POST http://localhost:4000/v1/movies
+
+{"title":"Moana","year":2016,"runtime":"107 mins", "genres":["animation","adventure"]}
+
+###
+POST http://localhost:4000/v1/movies
+
+{"title":"Deadpool","year":2016, "runtime":"108 mins","genres":["action","comedy"]}
+
+###
+POST http://localhost:4000/v1/movies
+
+{"title":"The Breakfast Club","year":1986, "runtime":"96 mins","genres":["drama"]}
