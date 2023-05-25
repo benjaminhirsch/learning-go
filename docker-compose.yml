@@ -11,3 +11,18 @@ services:
       POSTGRES_DB: app
     ports:
       - "5432:5432"
+    networks:
+      - app
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: greenlight-mailhog
+    ports:
+      - "8025:8025"
+      - "1025:1025"
+    networks:
+      - app
+
+networks:
+  app:
+    driver: bridge

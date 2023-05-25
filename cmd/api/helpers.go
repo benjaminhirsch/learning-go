@@ -55,7 +55,7 @@ func (app *application) writeJSON(w http.ResponseWriter, status int, data envelo
 	// Add the "Content-Type: application/json" header, then write the status code and
 	// JSON response.
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
+	//w.WriteHeader(status)
 	_, _ = w.Write(js)
 
 	return nil
@@ -189,4 +189,20 @@ func (app *application) readInt(qs url.Values, key string, defaultValue int, v *
 
 	// Otherwise, return the converted integer value.
 	return i
+}
+
+// The background() helper accepts an arbitrary function as a parameter.
+func (app *application) background(fn func()) {
+	// Launch a background goroutine.
+	go func() {
+		// Recover any panic.
+		defer func() {
+			if err := recover(); err != nil {
+				app.logger.PrintError(fmt.Errorf("%s", err), nil)
+			}
+		}()
+
+		// Execute the arbitrary function that we passed as the parameter.
+		fn()
+	}()
 }

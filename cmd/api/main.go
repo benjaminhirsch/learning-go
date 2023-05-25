@@ -6,6 +6,7 @@ import (
 	"flag"
 	"greenlight.benjaminhirsch.net/internal/data"
 	"greenlight.benjaminhirsch.net/internal/jsonlog"
+	"greenlight.benjaminhirsch.net/internal/mailer"
 	"os"
 	"time"
 	// Import the pq driver so that it can register itself with the database/sql
@@ -33,6 +34,13 @@ type config struct {
 		maxIdleConnections int
 		maxIdleTime        string
 	}
+	smtp struct {
+		host     string
+		port     int
+		username string
+		password string
+		sender   string
+	}
 }
 
 // Define an application struct to hold the dependencies for our HTTP handlers, helpers,
@@ -42,6 +50,7 @@ type application struct {
 	config config
 	logger *jsonlog.Logger
 	models data.Models
+	mailer mailer.Mailer
 }
 
 func main() {
@@ -62,6 +71,12 @@ func main() {
 	flag.IntVar(&cfg.db.maxIdleConnections, "db-max-idle-connections", 25, "PostgreSQL max idle connections")
 	flag.StringVar(&cfg.db.maxIdleTime, "db-max-idle-time", "15m", "PostgreSQL max connection idle time")
 
+	flag.StringVar(&cfg.smtp.host, "smtp-host", "localhost", "SMTP host")
+	flag.IntVar(&cfg.smtp.port, "smtp-port", 1025, "SMTP port")
+	flag.StringVar(&cfg.smtp.username, "smtp-username", "", "SMTP username")
+	flag.StringVar(&cfg.smtp.password, "smtp-password", "", "SMTP password")
+	flag.StringVar(&cfg.smtp.sender, "smtp-sender", "Greenlight <no-reply@greenlight.benjaminhirsch.net>", "SMTP sender")
+
 	flag.Parse()
 
 	logger := jsonlog.New(os.Stdout, jsonlog.LevelInfo)
@@ -78,6 +93,7 @@ func main() {
 		config: cfg,
 		logger: logger,
 		models: data.NewModels(db),
+		mailer: mailer.New(cfg.smtp.host, cfg.smtp.port, cfg.smtp.username, cfg.smtp.password, cfg.smtp.sender),
 	}
 
 	err = app.serve()
